@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
-const path = require("path");
 
 const detectDrift = require("./driftEngine");
 
@@ -9,7 +8,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// API route
 app.post("/upload", (req, res) => {
   const baseline = JSON.parse(fs.readFileSync("baseline.json"));
   const current = JSON.parse(fs.readFileSync("current.json"));
@@ -17,11 +15,10 @@ app.post("/upload", (req, res) => {
   res.json({ drift });
 });
 
-// Serve React build
-app.use(express.static(path.join(__dirname, "frontend/build")));
+app.use(express.static("frontend/build"));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend/build", "index.html"));
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/frontend/build/index.html");
 });
 
 const PORT = process.env.PORT || 5000;
