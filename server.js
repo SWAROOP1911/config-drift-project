@@ -12,6 +12,7 @@ app.use(express.json());
 
 const upload = multer({ dest: "uploads/" });
 
+// API route
 app.post("/upload", upload.single("file"), (req, res) => {
   const baseline = JSON.parse(fs.readFileSync("baseline.json"));
   const current = JSON.parse(fs.readFileSync("current.json"));
@@ -20,11 +21,13 @@ app.post("/upload", upload.single("file"), (req, res) => {
   res.json({ drift });
 });
 
-// Serve React build
-app.use(express.static(path.join(__dirname, "frontend", "build")));
+// Serve React build folder
+const buildPath = path.join(__dirname, "frontend", "build");
+app.use(express.static(buildPath));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "build", "index.html"));
+// For any other route, send React index.html
+app.get("/*", function (req, res) {
+  res.sendFile(path.join(buildPath, "index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
